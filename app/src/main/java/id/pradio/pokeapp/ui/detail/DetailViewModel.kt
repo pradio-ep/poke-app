@@ -5,16 +5,22 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import id.pradio.pokeapp.core.BaseViewModel
 import id.pradio.pokeapp.core.ext.handleError
+import id.pradio.pokeapp.data.ExtraRepository
 import id.pradio.pokeapp.data.Repository
+import id.pradio.pokeapp.data.entity.MyPokemonEntity
+import id.pradio.pokeapp.data.resultmodel.CatchPokemonResult
 import id.pradio.pokeapp.ui.home.ElementItemModel
+import id.pradio.pokeapp.ui.home.PokemonItemModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailViewModel @Inject constructor(private val repository: Repository) :
-    BaseViewModel<Event, State>() {
+class DetailViewModel @Inject constructor(
+    private val repository: Repository,
+    private val extraRepository: ExtraRepository
+) : BaseViewModel<Event, State>() {
 
     private val evolutionId = MutableLiveData<Int>()
     private val pokemonId = MutableLiveData<Int>()
@@ -24,6 +30,9 @@ class DetailViewModel @Inject constructor(private val repository: Repository) :
             is Event.GetPokemonDetail -> {
                 pokemonId.value = event.id
                 requestDetailStat()
+            }
+            is Event.GetMyPokemon -> {
+                isMyPokemon(event.id)
             }
             is Event.GetNextPokemon -> {
                 pokemonId.value = event.id
@@ -39,6 +48,12 @@ class DetailViewModel @Inject constructor(private val repository: Repository) :
                 pokemonId.value = event.id
                 getPokemon(event.id)
                 requestDetailStat()
+            }
+            is Event.CatchPokemon -> {
+                catchPokemon()
+            }
+            is Event.SavePokemon -> {
+                savePokemon(event.model, event.nickname)
             }
             Event.StatClick -> requestDetailStat()
             Event.EvolutionClick -> requestEvolution()
@@ -167,6 +182,65 @@ class DetailViewModel @Inject constructor(private val repository: Repository) :
                         )
                     }
                 }
+        }
+    }
+
+    private fun isMyPokemon(id: Int) {
+        viewModelScope.launch {
+            repository.getMyPokemon(id).collectLatest {
+                if (it.isNotEmpty()) {
+                    withContext(Dispatchers.Main) {
+                        pushState(State.DetailState.MyPokemon(true))
+                    }
+                } else {
+                    pushState(State.DetailState.MyPokemon(false))
+                }
+            }
+        }
+    }
+
+    private fun catchPokemon() {
+        pushState(State.DetailState.Loading)
+        viewModelScope.launch(Dispatchers.IO) {
+            extraRepository.catchPokemon()
+                .catch { e ->
+                    e.handleError({
+                        withContext(Dispatchers.Main) {
+                            pushState(State.ConnectionFailed)
+                        }
+                    }) {
+                        withContext(Dispatchers.Main) {
+                            pushState(State.DetailState.Failed(it.message))
+                        }
+                    }
+                }
+                .collectLatest {
+                    if (it.message == "Success") {
+                        withContext(Dispatchers.Main) {
+                            pushState(State.DetailState.CatchSuccess)
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            pushState(State.DetailState.CatchFailed)
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun savePokemon(model: PokemonItemModel, nickName: String) {
+        pushState(State.DetailState.Loading)
+        viewModelScope.launch(Dispatchers.IO) {
+            val pokemon = MyPokemonEntity(
+                model.id,
+                nickName,
+                nickName,
+                0
+            )
+            repository.saveMyPokemon(pokemon)
+            withContext(Dispatchers.Main) {
+                pushState(State.DetailState.SavePokemonSuccess)
+            }
         }
     }
 

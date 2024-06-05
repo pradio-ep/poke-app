@@ -365,4 +365,54 @@ class RepositoryImpl @Inject constructor(
             NameAndOverview(formattedName, abilityOverview)
         }
     }
+
+    override suspend fun saveMyPokemon(myPokemonEntity: MyPokemonEntity) {
+        dao.saveMyPokemon(myPokemonEntity)
+    }
+
+    override suspend fun listMyPokemon(): Flow<List<MyPokemonResult>> = flow {
+        coroutineScope {
+            val data = async { dao.listMyPokemon() }
+            if (data.await().isNotEmpty()) {
+                val list = data.await().map {
+                    MyPokemonResult(
+                        it.id,
+                        it.name,
+                        it.displayName,
+                        it.renameAttempt
+                    )
+                }
+                emit(list)
+            } else {
+                emit(emptyList<MyPokemonResult>())
+            }
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getMyPokemon(id: Int): Flow<List<MyPokemonResult>> = flow {
+        coroutineScope {
+            val data = async { dao.getMyPokemon(id) }
+            if (data.await().isNotEmpty()) {
+                val list = data.await().map {
+                    MyPokemonResult(
+                        it.id,
+                        it.name,
+                        it.displayName,
+                        it.renameAttempt
+                    )
+                }
+                emit(list)
+            } else {
+                emit(emptyList<MyPokemonResult>())
+            }
+        }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun renameMyPokemon(myPokemonEntity: MyPokemonEntity) {
+        dao.renameMyPokemon(myPokemonEntity)
+    }
+
+    override suspend fun releaseMyPokemon(id: Int) {
+        dao.releaseMyPokemonById(id)
+    }
 }

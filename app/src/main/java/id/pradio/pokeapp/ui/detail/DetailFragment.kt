@@ -57,6 +57,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(FragmentDetailBinding
         bindViewModel()
 
         viewModel.onEvent(Event.GetPokemonDetail(pokemon.id))
+        viewModel.onEvent(Event.GetMyPokemon(pokemon.id))
 
         binding.scrollView.setOnTouchListener(object : OnSwipeTouchListener(requireContext()) {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -71,14 +72,23 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(FragmentDetailBinding
             override fun onSwipeTop() {}
             override fun onSwipeBottom() {}
         })
+        binding.fabCatchPokemon.setOnClickListener {
+            viewModel.onEvent(Event.CatchPokemon(pokemon))
+        }
     }
 
     private fun nextPokemon() {
-        if (pokemon.id < 45) viewModel.onEvent(Event.GetNextPokemon(pokemon.id.plus(1)))
+        if (pokemon.id < 45) {
+            viewModel.onEvent(Event.GetNextPokemon(pokemon.id.plus(1)))
+            viewModel.onEvent(Event.GetMyPokemon(pokemon.id.plus(1)))
+        }
     }
 
     private fun prevPokemon() {
-        if (pokemon.id > 1) viewModel.onEvent(Event.GetPrevPokemon(pokemon.id.minus(1)))
+        if (pokemon.id > 1) {
+            viewModel.onEvent(Event.GetPrevPokemon(pokemon.id.minus(1)))
+            viewModel.onEvent(Event.GetMyPokemon(pokemon.id.minus(1)))
+        }
     }
 
     private fun updateView() {
@@ -206,12 +216,39 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(FragmentDetailBinding
             is State.EvolutionState.Loaded -> updateEvolutionUiDetail(it.list)
             is State.ConnectionFailed -> {
                 detailAdapter.connectionError()
-                showSnackBar(getString(R.string.label_connection_trouble))
+                showSnackBarRetry(getString(R.string.label_connection_trouble))
+            }
+            is State.DetailState.MyPokemon -> {
+                if (it.isMyPokemon) binding.fabCatchPokemon.hide()
+                else binding.fabCatchPokemon.show()
+            }
+            is State.DetailState.CatchSuccess -> {
+                val dialog = SetNicknameDialog(pokemon.name)
+                dialog.show(parentFragmentManager, "TAG")
+                dialog.buttonSaveAction = { nickname ->
+                    viewModel.onEvent(Event.SavePokemon(pokemon, nickname))
+                }
+            }
+            is State.DetailState.CatchFailed -> {
+                showSnackBar("Failed Catch Pokemon, Please Try Again")
+            }
+            is State.DetailState.SavePokemonSuccess -> {
+                binding.fabCatchPokemon.hide()
+                showSnackBar("Success Catch Pokemon, Save to My Pokemon")
             }
         }
     }
 
     private fun showSnackBar(message: String) {
+        Snackbar.make(
+            requireContext(),
+            binding.root,
+            message,
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
+
+    private fun showSnackBarRetry(message: String) {
         Snackbar.make(
             requireContext(),
             binding.root,

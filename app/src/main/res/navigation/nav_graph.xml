@@ -28,6 +28,13 @@
             app:exitAnim="@android:anim/fade_out"
             app:popEnterAnim="@android:anim/fade_in"
             app:popExitAnim="@anim/out_top_to_bottom" />
+        <action
+            android:id="@+id/action_homeFragment_to_myPokemonFragment"
+            app:destination="@id/myPokemonFragment"
+            app:enterAnim="@anim/in_bottom_to_top"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@anim/out_top_to_bottom" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -37,5 +44,11 @@
         <argument
             android:name="pokemonItemModel"
             app:argType="id.pradio.pokeapp.ui.home.PokemonItemModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/myPokemonFragment"
+        android:name="id.pradio.pokeapp.ui.mypokemon.MyPokemonFragment"
+        android:label="MyPokemonFragment"
+        tools:layout="@layout/fragment_my_pokemon">
     </fragment>
 </navigation>

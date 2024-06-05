@@ -1,6 +1,7 @@
 package id.pradio.pokeapp.ui.detail
 
 import id.pradio.pokeapp.ui.home.HomeUiModel
+import id.pradio.pokeapp.ui.mypokemon.SaveUiModel
 
 interface DetailUiModel
 
@@ -24,5 +25,5 @@ data class EvolutionItemModel(
     val trigger: String
 ) : DetailUiModel
 
-object LoadingItemModel : DetailUiModel, HomeUiModel
-object ConnectionError : DetailUiModel, HomeUiModel
+object LoadingItemModel : DetailUiModel, HomeUiModel, SaveUiModel
+object ConnectionError : DetailUiModel, HomeUiModel, SaveUiModel

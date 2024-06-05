@@ -12,7 +12,7 @@ interface HomeUiModel
 @Parcelize
 data class PokemonItemModel(
     val id: Int,
-    val name: String?,
+    val name: String,
     val number: String,
     val imageUrl: String?,
     val elements: List<ElementItemModel>

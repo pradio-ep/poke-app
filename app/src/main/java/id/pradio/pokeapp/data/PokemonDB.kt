@@ -13,7 +13,8 @@ import id.pradio.pokeapp.data.entity.*
         DetailEntity::class,
         StatEntity::class,
         AbilityEntity::class,
-        EvolutionEntity::class
+        EvolutionEntity::class,
+        MyPokemonEntity::class
     ],
     version = 1,
     exportSchema = false

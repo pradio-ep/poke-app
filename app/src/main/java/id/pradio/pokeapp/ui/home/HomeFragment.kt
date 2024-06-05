@@ -50,6 +50,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
                 binding.icSort.setImageResource(R.drawable.ic_sort_by_id)
             }
         }
+        binding.btnMyPokemon.setOnClickListener {
+            val directions = HomeFragmentDirections.actionHomeFragmentToMyPokemonFragment()
+            navController.navigate(directions)
+        }
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

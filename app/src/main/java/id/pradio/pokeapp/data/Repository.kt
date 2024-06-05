@@ -1,7 +1,9 @@
 package id.pradio.pokeapp.data
 
+import id.pradio.pokeapp.data.entity.MyPokemonEntity
 import id.pradio.pokeapp.data.resultmodel.DetailPokemonResult
 import id.pradio.pokeapp.data.resultmodel.EvolutionResult
+import id.pradio.pokeapp.data.resultmodel.MyPokemonResult
 import id.pradio.pokeapp.data.resultmodel.PokemonResult
 import kotlinx.coroutines.flow.Flow
 
@@ -18,4 +20,10 @@ interface Repository {
         pokemonId: Int,
         evolutionId: Int?
     ): Flow<List<EvolutionResult>>
+
+    suspend fun saveMyPokemon(myPokemonEntity: MyPokemonEntity)
+    suspend fun listMyPokemon(): Flow<List<MyPokemonResult>>
+    suspend fun getMyPokemon(id: Int): Flow<List<MyPokemonResult>>
+    suspend fun renameMyPokemon(myPokemonEntity: MyPokemonEntity)
+    suspend fun releaseMyPokemon(id: Int)
 }

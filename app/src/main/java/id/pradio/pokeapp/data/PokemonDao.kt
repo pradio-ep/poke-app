@@ -63,4 +63,22 @@ interface PokemonDao {
     @Transaction
     @Query("DELETE FROM evolution WHERE pokemon_id = :id")
     fun deleteEvolutionByPokemonId(id: Int)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun saveMyPokemon(pokemon: MyPokemonEntity)
+
+    @Transaction
+    @Query("SELECT * FROM my_pokemon ORDER BY id ASC")
+    fun listMyPokemon(): List<MyPokemonEntity>
+
+    @Transaction
+    @Query("SELECT * FROM my_pokemon WHERE id = :id")
+    fun getMyPokemon(id: Int): List<MyPokemonEntity>
+
+    @Update
+    fun renameMyPokemon(pokemon: MyPokemonEntity)
+
+    @Transaction
+    @Query("DELETE FROM my_pokemon WHERE id = :id")
+    fun releaseMyPokemonById(id: Int)
 }

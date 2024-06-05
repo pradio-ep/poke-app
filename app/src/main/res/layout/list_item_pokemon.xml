@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/dimen_8dp"
     android:layout_marginBottom="@dimen/dimen_8dp"
     app:strokeColor="@color/color_type_grass"
     app:strokeWidth="1dp"

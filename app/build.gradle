@@ -78,6 +78,9 @@ dependencies {
     implementation deps.hilt.android
     kapt deps.hilt.compiler
 
+    debugImplementation deps.chucker.library
+    releaseImplementation deps.chucker.libraryNoOp
+
     testImplementation deps.testing.jUnit
     testImplementation deps.testing.mockitoCore
     testImplementation deps.testing.mockitoKotlin

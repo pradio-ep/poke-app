@@ -68,6 +68,7 @@ versions.coroutinesTest = "1.6.4"
 //Additional
 versions.slidingButton = "2.0.0"
 versions.mpchart = 'v3.1.0'
+versions.chucker = '3.5.2'
 
 ext.versions = versions
 
@@ -209,6 +210,14 @@ room.rxJava = "androidx.room:room-rxjava2:${versions.room}"
 
 deps.room = room
 
+/**
+ * Start room dependencies
+ */
+def chucker = [:]
+chucker.library = "com.github.chuckerteam.chucker:library:${versions.chucker}"
+chucker.libraryNoOp = "com.github.chuckerteam.chucker:library-no-op:${versions.chucker}"
+
+deps.chucker = chucker
 
 /**
  * Start testing dependencies

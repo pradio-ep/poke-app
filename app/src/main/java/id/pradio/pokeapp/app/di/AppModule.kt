@@ -4,11 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import id.pradio.pokeapp.data.PokemonDB
 import id.pradio.pokeapp.R
-import id.pradio.pokeapp.data.PokemonService
-import id.pradio.pokeapp.data.Repository
-import id.pradio.pokeapp.data.RepositoryImpl
+import id.pradio.pokeapp.data.*
 import id.pradio.pokeapp.data.di.DBModule
 import id.pradio.pokeapp.data.di.NetworkModule
 import retrofit2.Retrofit
@@ -42,16 +39,18 @@ object AppModule {
     }
 
     @Provides
-    fun providePokemonService(retrofit: Retrofit): PokemonService {
-        return retrofit.create(PokemonService::class.java)
-    }
-
-    @Provides
     fun provideRepository(
         service: PokemonService,
         elementSource: Map<String, Pair<Int, Int>>,
         pokemonDb: PokemonDB
     ): Repository {
         return RepositoryImpl(service, elementSource, pokemonDb.dao)
+    }
+
+    @Provides
+    fun provideExtraRepository(
+        service: ExtraService
+    ): ExtraRepository {
+        return ExtraRepositoryImpl(service)
     }
 }
